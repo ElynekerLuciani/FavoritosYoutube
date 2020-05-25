@@ -1,7 +1,9 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:favoritosyoutube/api/api.dart';
 import 'package:favoritosyoutube/blocs/favorite_bloc.dart';
 import 'package:favoritosyoutube/models/video.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_youtube/flutter_youtube.dart';
 
 class VideoTile extends StatelessWidget {
   final Video video;
@@ -12,30 +14,37 @@ class VideoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<FavoriteBloc>(context);
 
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          AspectRatio(
+    return GestureDetector(
+      onTap: (){
+        FlutterYoutube.playYoutubeVideoById(
+            apiKey: API_KEY,
+            videoId: video.id,
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 4.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            AspectRatio(
               aspectRatio: 16.0/9.0,
-            child: Image.network(video.thumb, fit: BoxFit.cover,
+              child: Image.network(video.thumb, fit: BoxFit.cover,
+              ),
             ),
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
+            Row(
+              children: <Widget>[
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                          padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                        padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                         child: Text(
                           video.title,
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold
                           ),
                           maxLines: 2,
                         ),
@@ -43,22 +52,22 @@ class VideoTile extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.all(8),
                         child: Text(
-                            video.channel,
+                          video.channel,
                           style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 14
+                              color: Colors.black54,
+                              fontSize: 14
                           ),
                         ),
                       ),
                     ],
                   ),
-              ),
-              StreamBuilder<Map<String, Video>>(
-                stream: bloc.outFav,
-                  // ignore: missing_return
-                  builder: (context, snapshot){
-                    if(snapshot.hasData) {
-                      return IconButton(
+                ),
+                StreamBuilder<Map<String, Video>>(
+                    stream: bloc.outFav,
+                    // ignore: missing_return
+                    builder: (context, snapshot){
+                      if(snapshot.hasData) {
+                        return IconButton(
                           icon: Icon(snapshot.data.containsKey(video.id) ?
                           Icons.star : Icons.star_border),
                           iconSize: 30,
@@ -66,16 +75,17 @@ class VideoTile extends StatelessWidget {
                             bloc.toggleFavorite(video);
 
                           },
-                      );
-                    } else {
-                      return CircularProgressIndicator();
-                    }
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
 
-                  }
-              ),
-            ],
-          ),
-        ],
+                    }
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
