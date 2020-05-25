@@ -24,7 +24,6 @@ class HomeScreen extends StatelessWidget {
             alignment: Alignment.center,
             child: StreamBuilder<Map<String, Video>>(
               stream: BlocProvider.of<FavoriteBloc>(context).outFav,
-                initialData: {},
                 // ignore: missing_return
                 builder: (context, snapshot){
                   if(snapshot.hasData){
